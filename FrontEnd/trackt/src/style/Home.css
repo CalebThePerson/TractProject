@@ -18,6 +18,8 @@
     border-width: 0.063rem;
     border-radius: 1.563rem;
     font-weight: bold;
+    border-color: white;
+    background-color: white;
 
 }
 
@@ -49,3 +51,8 @@
     font-weight: bold;
   }
 
+
+  .formHolder {
+    display: flex;
+    justify-content: center;  
+}
