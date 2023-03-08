@@ -1,8 +1,10 @@
+#header {
+    background-color: #ebeaea;
+}
 #mainContent{
     display: flex;
     justify-content: center;
     min-height: 100vh;
-    background-color: #ebeaea;
     align-items: center;
 }
 #contentWrapper {
@@ -55,4 +57,16 @@
   .formHolder {
     display: flex;
     justify-content: center;  
+}
+
+.logo {
+    height: 5rem;
+    width: 5rem;
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    border-width: 0;
+    background-color: #ebeaea;
+    margin-left: 0;
+
 }

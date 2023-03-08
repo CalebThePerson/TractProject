@@ -4,6 +4,7 @@ import { Button } from 'react-bootstrap';
 import Form from 'react-bootstrap/Form';
 import '../style/Home.css'
 import axios from 'axios'
+import logo from '../assests/png.png'
 require('cors')
 
 
@@ -34,6 +35,10 @@ export default function Home(){
     }
 
     //API Function will go here
+
+    async function login(){
+
+    }
     
     async function getInformation() {
         await axios(`http://localhost:3001/scrapping?url=`+encodeURI(link) )
@@ -48,6 +53,8 @@ export default function Home(){
     } else {
         return(
             <body id = 'mainBody'>
+                <div id='header'>
+                 <button className = 'logo' onClick = {login}><img src={logo} className='logo'></img></button>
                 <div id = "mainContent">
                 <div id = "contentWrapper">
                     <h1 className = "mainText">Linkedin Profile Scraper</h1>
@@ -61,6 +68,7 @@ export default function Home(){
                         { loadingCircle && <LoadingCircle />}
                     </Form>
                     </div>
+                </div>
                 </div>
                 </div>
             </body>
