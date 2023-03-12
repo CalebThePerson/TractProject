@@ -1,4 +1,5 @@
 import LoadingCircle from '../components /LoadingCircle'
+import DisplayBox from '../components /DisplayBox';
 import {useEffect, useState} from "react";
 import { Button } from 'react-bootstrap';
 import Form from 'react-bootstrap/Form';
@@ -14,6 +15,11 @@ export default function Home(){
     const [submit, updateSubmit] = useState(false)
     const [loadingCircle, updateStatus] = useState(false)
     const [appropriateLink, updateLinkStatus] = useState(true)
+    const [loginBox, displayBox] = useState(false)
+    const [loggedIn, changeLoginStatus] = useState(false)
+
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
 
     //OnChange Methods
     const changeLink = (event, method) => {
@@ -34,6 +40,22 @@ export default function Home(){
 
     }
 
+    const changeBoxStatus = (event, method) => {
+        displayBox(true)
+    }
+
+    //onChange Methods for child views
+    // const updateEmail = (event, method) => {
+
+    // }
+
+    // const updatePassword = (event, method) => {
+
+    // }
+
+    // const updateLogin = (event, method ) => {
+
+    // }
     //API Function will go here
 
     async function login(){
@@ -51,27 +73,32 @@ export default function Home(){
             <h1>POg</h1>
         )
     } else {
-        return(
-            <body id = 'mainBody'>
-                <div id='header'>
-                 <button className = 'logo' onClick = {login}><img src={logo} className='logo'></img></button>
-                <div id = "mainContent">
-                <div id = "contentWrapper">
-                    <h1 className = "mainText">Linkedin Profile Scraper</h1>
-                    <div className = 'formHolder'>
-                    <Form>
-                    {!appropriateLink && <Form.Label>Make sure the url is a Linkedin url</Form.Label>}
-                        <Form.Group className = "mb-3">
-                            <Form.Control className = "emailField" placeholder="Enter URL of Linkdin Profile" onChange={changeLink}></Form.Control>
-                        </Form.Group>
-                        <Button id = "submitButton" variant="primary" type="submit" onClick={changeStatus}>Submit</Button>
-                        { loadingCircle && <LoadingCircle />}
-                    </Form>
+        if (loginBox){
+            return(<DisplayBox updateEmail = {email => setEmail(email)} updatePassword = {password => setPassword(password)} loggedIn = {loggedIn => changeLoginStatus(true)} showItself = {display => displayBox(display)}></DisplayBox>)
+        } else {
+            return(
+                <body id = 'mainBody'>
+                    <div id='header'>
+                     <button className = 'logo' onClick={changeBoxStatus}><img src={logo} className='logo'></img></button>
+                    <div id = "mainContent">
+                    <div id = "contentWrapper">
+                        <h1 className = "mainText">Linkedin Profile Scraper</h1>
+                        <div className = 'formHolder'>
+                        <Form>
+                        {!appropriateLink && <Form.Label>Make sure the url is a Linkedin url</Form.Label>}
+                            <Form.Group className = "mb-3">
+                                <Form.Control className = "emailField" placeholder="Enter URL of Linkdin Profile" onChange={changeLink}></Form.Control>
+                            </Form.Group>
+                            <Button id = "submitButton" variant="primary" type="submit" onClick={changeStatus}>Submit</Button>
+                            { loadingCircle && <LoadingCircle />}
+                        </Form>
+                        </div>
                     </div>
-                </div>
-                </div>
-                </div>
-            </body>
-        )
+                    </div>
+                    </div>
+                </body>
+            )
+        }
+
     }
 }

@@ -14,8 +14,8 @@
 
 #submitButton {
     margin-top: 2.5%;
-    width: 150px;
-    height: 40px;
+    width: 9.375rem;
+    height: 2.5rem;
     border-style: solid;
     border-width: 0.063rem;
     border-radius: 1.563rem;
@@ -41,8 +41,6 @@
     color: white;
     font-weight: bold;
     font-size: 1.5rem;
-
-
 }
 
 ::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
@@ -54,7 +52,7 @@
   }
 
 
-  .formHolder {
+.formHolder {
     display: flex;
     justify-content: center;  
 }
