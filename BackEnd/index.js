@@ -16,6 +16,24 @@ app.listen(port, () => {
 })
 
 //Actuall Endpoints
+app.get('/login', async(req, res) => {
+    console.log('Logging in')
+    const email = req.query.email
+    const password = req.query.password
+
+    //test prints
+    console.log(email)
+    console.log(password)
+    const response = await login(email, password)
+    if (response == true) {
+        res.send('Currently Logged in')
+    } else {
+        res.send(response)
+    }
+
+})
+
+
 app.get('/scrapping', async(req, res) => {
     res.header('Access-Control-Allow-Origin', 'http://localhost:3001');
     res.header(
@@ -30,16 +48,44 @@ app.get('/scrapping', async(req, res) => {
 })
 
 //Scrapping functions
+async function login(email, password) {
+    const browser = await puppeteer.launch({
+        headless: false,
+        args: ['--no-sandbox', '--disable-setuid-sandbox']
+    })
+
+    const page = (await browser.pages())[0]
+    await page.goto('https://www.linkedin.com/login?fromSignIn=true&trk=guest_homepage-basic_nav-header-signin')
+    await page.waitForSelector('.header__content__heading')
+
+    await page.type('#username', email)
+    await page.type('#password', password)
+
+    await page.waitForNavigation()
+    await page.goto('https://linkedin.com/feed/')
+
+    if (await page.url() != 'https://linkedin.com/feed/') {
+        browser.close()
+        return "Error with Login Information"
+    }
+    const cookies = await page.cookies()
+    await fs.writeFile('./cookies.json', JSON.stringify(cookies, null, 2))
+    browser.close()
+    return true
+}
+
 async function getData(url) {
     const browser = await puppeteer.launch({
-        headless: true,
+        headless: false,
         args: ['--no-sandbox', '--disable-setuid-sandbox']
     })
 
     const page = (await browser.pages())[0]
     await page.goto(url)
-    await page.waitForNavigation()
+    await page.waitForNavigation(50000)
+    
     const data = await page.evaluate(() => document.documentElement.outerHTML)
+
     browser.close()
     parseData(data)
 
@@ -48,8 +94,10 @@ async function getData(url) {
 async function parseData(data) {
     var $ = await cheerio.load(data, false) 
 
+    console.log($.html())
     //So far this seems like a surefire way of getting the name of the page 
-    const name = $('h1').text().trim()
+    // const name = $('div[class=.top-card-layout__entity-info]').html()
+    // const descriptiton = $('h1[class="text-heading-xlarge inline t-24 v-align-middle break-words"]').text()
     console.log(name)
 
 }
