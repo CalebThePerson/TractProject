@@ -1,6 +1,7 @@
 import LoadingCircle from '../components /LoadingCircle'
 import DisplayBox from '../components /DisplayBox';
 import {useEffect, useState} from "react";
+import { CSVLink, CSVDownload } from "react-csv";
 import { Button } from 'react-bootstrap';
 import Form from 'react-bootstrap/Form';
 import '../style/Home.css'
@@ -17,9 +18,15 @@ export default function Home(){
     const [appropriateLink, updateLinkStatus] = useState(true)
     const [loginBox, displayBox] = useState(false)
     const [loggedIn, changeLoginStatus] = useState(false)
+    const [changeView, updateViewStat] = useState(false)
 
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+
+    const [basicInfo, updateBasic] = useState([])
+    const [eduInfo, updateEdu] = useState([])
+    const [expInfo, updateExp] = useState([])
+    const [recInfo, updateRec] = useState([])
 
     //OnChange Methods
     const changeLink = (event, method) => {
@@ -33,9 +40,8 @@ export default function Home(){
             updateLinkStatus(false)
         } else {
             updateStatus(true)
-            console.log("stats changed")
-            console.log(loadingCircle)
             getInformation()
+
         }
 
     }
@@ -63,14 +69,62 @@ export default function Home(){
     }
     
     async function getInformation() {
-        await axios(`http://localhost:3001/scrapping?url=`+encodeURI(link) )
+        // await axios(`http://localhost:3001/scrapping?url=`+encodeURI(link) )
+        const response = await axios(`http://localhost:3001/lightscrape?url=`+encodeURI(link) )
+        updateBasic(response.data[0])
+        updateEdu(response.data[1])
+        updateExp(response.data[2])
+        updateRec(response.data[3])
+        updateStatus(false)
+        updateViewStat(true)
+
     }
 
 
     //The view that is being rendered
-    if(submit) {
+    if(changeView) {
         return(
-            <h1>POg</h1>
+            <body id='mainbody'>
+                <div id = 'mainBody'>
+                    <div id = 'mainContent'>
+                        <div id = 'contentWrapper'>
+                            <div id = 'allInfo'>
+                                {basicInfo.map((item, idx) => (
+                                    // console.log(item)
+                                    <div>
+                                    <h1>{item.name}</h1>
+                                    <h1>{item.about}</h1>
+                                    <h1>{item.desc}</h1>
+                                    </div>
+                                ))}
+                                {eduInfo.map((item, idx) =>(
+                                    <div>
+                                        <h2>{item.title}</h2>
+                                        <h2>{item.subtitle}</h2>
+                                    </div>
+                                ))}
+
+                                {expInfo.map((item,idx) => (
+                                    <div>
+                                        <h2>{item.title}, {item.company}, {item.subtitle}</h2>
+                                    </div>
+                                ))}
+
+                                {recInfo.map((item, idx) => (
+                                    <div>
+                                        <h3>{item.name}</h3>
+                                    </div>
+                                ))}
+
+                                {/* <CSVLink>Download me</CSVLink>; */}
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </body>
         )
     } else {
         if (loginBox){
