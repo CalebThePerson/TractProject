@@ -49,6 +49,13 @@ app.get('/scrapping', async(req, res) => {
 
 })
 
+app.get('/lightscrape', async(req,res) => {
+    console.log('starting Light Scrape')
+    const url = req.query.url
+    await lightgetData(url)
+
+})
+
 //Scrapping functions
 async function login(email, password) {
     const browser = await puppeteer.launch({
@@ -179,5 +186,81 @@ async function parseData(data, experience, education, reccs) {
     })
     // console.log(pretty(experience.html()))
     // console.log(about)
+
+}
+
+async function lightgetData(url) {
+    const browser = await puppeteer.launch({
+        headless: true,
+        args: ['--no-sandbox', '--disable-setuid-sandbox']
+        // slowMo: 1000
+    })
+
+    const page = (await browser.pages())[0]
+    await page.goto(url)
+    await page.waitForSelector('.btn-tertiary')
+    await page.click('.btn-tertiary')
+    await page.waitForSelector('h1')
+    const data = await page.evaluate(() => document.documentElement.outerHTML)
+    await simpleScrape(data)
+    browser.close()
+
+
+}
+
+async function simpleScrape(data) {
+    var $ = await cheerio.load(data)
+
+    //Getting names and etc
+    const topDiv = $('.top-card-layout__card').html()
+    // console.log(topDiv)
+    $ = await cheerio.load(topDiv)
+    const name = $('h1').text().trim()
+    const desc = $('h2:first').text().trim()
+    const about = $('.top-card__subline-item:first').text().trim()
+
+    var $ = await cheerio.load(data)
+    const experienceDiv = $('.experience__list').html()
+    $ = await cheerio.load(experienceDiv)
+
+    var allExp = []
+    $('.experience-item').each((i, element) => {
+        allExp.push({
+            title: $(element).find('.profile-section-card__title').text().trim(),
+            subttitle: $(element).find('.profile-section-card__subtitle').text().trim(),
+            company: $(element).find('.profile-section-card__subtitle-link').text().trim(),
+            company: $(element).find('.profile-section-card__subtitle-link').text().trim(),
+            data : $(element).find('.date-range').text().trim(),
+            location : $(element).find('.experience-item__location').text().trim()
+        })
+    })
+
+    var $ = await cheerio.load(data)
+    const educationDiv = $('.education__list').html()
+    $ = await cheerio.load(educationDiv)
+    var allEdu = []
+    $('.education__list-item').each((i, element) => {
+        allEdu.push({
+            title: $(element).find('.profile-section-card__title').text().trim(),
+            subttitle: $(element).find('.profile-section-card__subtitle').text().trim(),
+            description: $(element).find('.education__item--activities-and-societies').text().trim(),
+        })
+    })
+
+    var $ = await cheerio.load(data)
+    const recDiv = $('ul[data-impression-id=public_profile_show-more-less]').html()
+    $ = await cheerio.load(recDiv)
+    allRecs = []
+    
+    $('.recommendations__list-item').each((i, element) => {
+        allRecs.push({
+            name: $(element).find('h3').text().trim(),
+            profileUrl: $(element).find('a').attr('href'),
+            description: $(element).find('.body-text:first').text().trim(),
+        })
+    })
+    console.log(allRecs[0])
+
+
 
 }
