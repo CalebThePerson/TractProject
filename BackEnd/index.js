@@ -25,14 +25,13 @@ app.get('/login', async(req, res) => {
 
     //test prints
     console.log(email)
-    console.log(password)
+    // console.log(password)
     const response = await login(email, password)
     if (response == true) {
         res.send('Currently Logged in')
     } else {
         res.send(response)
     }
-
 })
 
 
@@ -53,7 +52,6 @@ app.get('/lightscrape', async(req,res) => {
     console.log('starting Light Scrape')
     const url = req.query.url
     var allData = await lightgetData(url)
-    console.log(allData)
     res.send(allData)
     console.log('finished scrape')
 
@@ -83,13 +81,13 @@ async function login(email, password) {
 
     if (url != 'https://www.linkedin.com/feed/') {
         browser.close()
-        console.log('Closing')
+        console.log('Closing, Error Loging In')
         return "Error with Login Information"
     }
     const cookies = await page.cookies()
     // await fs.writeFile('./cookies.json', JSON.stringify(cookies, null, 2)) Uncomment latter
     browser.close()
-    console.log('Closing, succesful action')
+    console.log('Closing, Logged In')
     return true
 }
 
@@ -286,4 +284,5 @@ async function simpleScrape(data) {
         })
     }
     return [basicInfo, allEdu, allExp, allRecs]
+
 }
